@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Sign Up - CivicDrishti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-page {
+            max-width: 450px;
+            margin: 55px auto;
+            padding: 0 20px
+        }
+
+        .auth-page h1 {
+            text-align: center
+        }
+
+        .auth-page>p {
+            text-align: center;
+            color: #68747e;
+            margin-bottom: 30px
+        }
+
+        .auth-card {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06)
+        }
+
+        .form-group {
+            margin-bottom: 18px
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px
+        }
+
+        .form-group input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border: 1px solid #d7dee2;
+            border-radius: 8px;
+            font-size: 14px
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 8px;
+            background: #299e65;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #68747e
+        }
+
+        .switch a {
+            color: #299e65;
+            font-weight: bold;
+            text-decoration: none
+        }
+
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z"/></svg></div>
+            <div>
+                <h2>CivicDrishti</h2>
+                <p>You Report. We Resolve.</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="myreports.html">My Reports</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="contacts.html">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <button class="notification" onclick="showNotifications()">🔔</button>
+            <button class="login-btn" onclick="location.href='login.html'">Login</button>
+            <button class="signup-btn">Sign Up</button>
+        </div>
+    </header>
+    <main class="auth-page">
+        <span class="small-title">👤 CREATE ACCOUNT</span>
+        <h1>Join <span>CivicDrishti</span></h1>
+        <p>Create an account to report and track civic issues.</p>
+        <div class="auth-card">
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" minlength="6"
+                        required>
+                </div>
+                <button class="auth-btn" type="submit">Create Account</button>
+                <div class="message" id="message"></div>
+            </form>
+            <div class="switch">Already have an account? <a href="login.html">Login</a></div>
+        </div>
+    </main>
+    <script>
+        function showNotifications() {
+            const reports = JSON.parse(localStorage.getItem("civicReports") || "[]");
+            alert(reports.length ? `You have ${reports.length} report${reports.length === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
+        }
+
+        document.getElementById("signupForm").addEventListener("submit", e => {
+            e.preventDefault();
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim().toLowerCase();
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const message = document.getElementById("message");
+            message.style.display = "block";
+
+            if (password !== confirmPassword) {
+                message.textContent = "❌ Passwords do not match.";
+                message.style.background = "#fdecec";
+                message.style.color = "#c44";
+                return;
+            }
+            const users = JSON.parse(localStorage.getItem("civicUsers") || "[]");
+            if (users.some(u => u.email === email)) {
+                message.textContent = "❌ An account with this email already exists.";
+                message.style.background = "#fdecec";
+                message.style.color = "#c44";
+                return;
+            }
+            const user = { name, email, password };
+            users.push(user);
+            localStorage.setItem("civicUsers", JSON.stringify(users));
+            localStorage.setItem("civicLoggedIn", "true");
+            localStorage.setItem("civicCurrentUser", JSON.stringify(user));
+
+            message.textContent = "✅ Account created successfully!";
+            message.style.background = "#e8f7ee";
+            message.style.color = "#258b55";
+            setTimeout(() => location.href = "index.html", 800);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Live Issue Map - CivicDrishti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .live-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px
+        }
+
+        .live-page h1 {
+            text-align: center
+        }
+
+        .live-page>p {
+            text-align: center;
+            color: #68747e
+        }
+
+        .live-map-box {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06)
+        }
+
+        .live-map {
+            height: 550px;
+            background: #e7eee9;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .road {
+            position: absolute;
+            background: #c7cec9
+        }
+
+        .road1 {
+            width: 120%;
+            height: 38px;
+            top: 43%;
+            left: -10%;
+            transform: rotate(10deg)
+        }
+
+        .road2 {
+            height: 120%;
+            width: 38px;
+            left: 57%;
+            top: -10%;
+            transform: rotate(18deg)
+        }
+
+        .road3 {
+            width: 110%;
+            height: 28px;
+            top: 72%;
+            left: -5%;
+            transform: rotate(-8deg)
+        }
+
+        .river {
+            position: absolute;
+            width: 130%;
+            height: 85px;
+            background: #9dd5e5;
+            top: 12%;
+            left: -15%;
+            transform: rotate(-8deg)
+        }
+
+        .live-marker {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 5
+        }
+
+        .live-marker:hover {
+            transform: translate(-50%, -50%) scale(1.2)
+        }
+
+        .live-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px
+        }
+
+        .live-title h2 {
+            margin: 0
+        }
+
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #299e65;
+            font-weight: bold
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #299e65;
+            border-radius: 50%;
+            display: inline-block
+        }
+
+        .info {
+            display: none;
+            margin-top: 15px;
+            padding: 18px;
+            background: #f5faf7;
+            border-radius: 10px
+        }
+
+        .info h3 {
+            margin: 0 0 8px
+        }
+
+        .info p {
+            margin: 6px 0;
+            color: #68747e
+        }
+
+        .controls {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .controls button {
+            width: 40px;
+            height: 40px;
+            border: 0;
+            background: white;
+            border-radius: 7px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .15)
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z"/></svg></div>
+            <div>
+                <h2>CivicDrishti</h2>
+                <p>You Report. We Resolve.</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="myreports.html">My Reports</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="contacts.html">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <button class="notification" onclick="showNotifications()">🔔</button>
+            <button class="login-btn" onclick="location.href='login.html'">Login</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">Sign Up</button>
+        </div>
+    </header>
+    <main class="live-page">
+        <span class="small-title">📍 LIVE MONITORING</span>
+        <h1>Live Issue <span>Map</span></h1>
+        <p>View civic issues reported in your area.</p>
+        <div class="live-map-box">
+            <div class="live-title">
+                <h2>Reported Issues</h2>
+                <div class="live-status"><span class="dot"></span>Live</div>
+            </div>
+            <div class="live-map" id="liveMap">
+                <div class="road road1"></div>
+                <div class="road road2"></div>
+                <div class="road road3"></div>
+                <div class="river"></div>
+                <div class="controls">
+                    <button id="zoomIn">+</button>
+                    <button id="zoomOut">−</button>
+                    <button id="locate">◎</button>
+                </div>
+            </div>
+            <div class="info" id="info"></div>
+        </div>
+    </main>
+    <script>
+        const icons = { "Pothole": "🕳️", "Garbage": "🗑️", "Streetlight": "💡", "Water Leakage": "💧", "Road Damage": "🛣️", "Others": "•••" };
+        const positions = [[18, 55], [32, 35], [48, 65], [65, 43], [80, 62], [43, 23], [73, 25], [25, 75], [58, 30], [87, 40]];
+
+        function getReports() {
+            return JSON.parse(localStorage.getItem("civicReports") || "[]");
+        }
+
+        function showNotifications() {
+            const reports = getReports();
+            alert(reports.length ? `You have ${reports.length} report${reports.length === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
+        }
+
+        function escapeHtml(value) {
+            return String(value || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+        }
+        function renderMarkers() {
+            const map = document.getElementById("liveMap");
+            map.querySelectorAll(".live-marker").forEach(e => e.remove());
+            const reports = getReports();
+            reports.forEach((r, i) => {
+                const marker = document.createElement("span");
+                const pos = positions[i % positions.length];
+                marker.className = "live-marker";
+                marker.textContent = "📍";
+                marker.style.left = pos[0] + "%";
+                marker.style.top = pos[1] + "%";
+                marker.title = r.category;
+                marker.onclick = () => {
+                    const info = document.getElementById("info");
+                    info.style.display = "block";
+                    info.innerHTML = `<h3>${icons[r.category] || "📍"} ${escapeHtml(r.category)}</h3><p>${escapeHtml(r.description)}</p><p>📍 ${escapeHtml(r.address)}</p><p>🕒 ${escapeHtml(r.createdAt)}</p><p>🟢 Status: ${escapeHtml(r.status)}</p>`;
+                };
+                map.appendChild(marker);
+            });
+        }
+        let scale = 1;
+        const map = document.getElementById("liveMap");
+        document.getElementById("zoomIn").onclick = () => {
+            scale = Math.min(scale + .1, 1.5);
+            map.style.transform = `scale(${scale})`;
+        };
+        document.getElementById("zoomOut").onclick = () => {
+            scale = Math.max(scale - .1, .7);
+            map.style.transform = `scale(${scale})`;
+        };
+        document.getElementById("locate").onclick = () => {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                p => alert(`Your location was found!\n\nLatitude: ${p.coords.latitude.toFixed(6)}\nLongitude: ${p.coords.longitude.toFixed(6)}`),
+                () => alert("Unable to get your location.")
+            );
+        };
+        renderMarkers();
+    </script>
+</body>
+</html>

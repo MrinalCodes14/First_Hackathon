@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Contact - CivicDrishti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .contact-page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px
+        }
+
+        .contact-page h1 {
+            text-align: center
+        }
+
+        .contact-page>p {
+            text-align: center;
+            color: #68747e;
+            margin-bottom: 35px
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 25px
+        }
+
+        .contact-card,
+        .contact-form {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06)
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 15px;
+            margin: 22px 0
+        }
+
+        .contact-icon {
+            font-size: 25px
+        }
+
+        .contact-item h3 {
+            margin: 0 0 5px
+        }
+
+        .contact-item p {
+            margin: 0;
+            color: #68747e
+        }
+
+        .form-group {
+            margin-bottom: 18px
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border: 1px solid #d7dee2;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px
+        }
+
+        .form-group textarea {
+            resize: vertical
+        }
+
+        .contact-btn {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 8px;
+            background: #299e65;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #e8f7ee;
+            color: #258b55;
+            text-align: center
+        }
+
+        @media(max-width:700px) {
+            .contact-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">📍</div>
+            <div>
+                <h2>CivicDrishti</h2>
+                <p>You Report. We Resolve.</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="myreports.html">My Reports</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="contacts.html" class="active">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <button class="notification" onclick="showNotifications()">🔔</button>
+            <button class="login-btn" onclick="location.href='login.html'">Login</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">Sign Up</button>
+        </div>
+    </header>
+    <main class="contact-page">
+        <span class="small-title">📞 GET IN TOUCH</span>
+        <h1>Contact <span>Us</span></h1>
+        <p>Have a question or feedback? We'd love to hear from you.</p>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h2>Let's Connect</h2>
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div>
+                        <h3>Email</h3>
+                        <p>civicdrishti@gmail.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <div>
+                        <h3>Phone</h3>
+                        <p>+91626448715</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🕒</div>
+                    <div>
+                        <h3>Support Hours</h3>
+                        <p>Monday - Friday, 9 AM - 6 PM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form">
+                <h2>Send a Message</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" placeholder="Enter subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageText">Message</label>
+                        <textarea id="messageText" rows="5" placeholder="Write your message..." required></textarea>
+                    </div>
+                    <button class="contact-btn" type="submit">Send Message</button>
+                    <div class="message" id="message"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+        function showNotifications() {
+            const reports = JSON.parse(localStorage.getItem("civicReports") || "[]");
+            alert(reports.length ? `You have ${reports.length} report${reports.length === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
+        }
+
+        document.getElementById("contactForm").addEventListener("submit", e => {
+            e.preventDefault();
+            const message = document.getElementById("message");
+            message.textContent = "✅ Your message has been sent successfully!";
+            message.style.display = "block";
+            document.getElementById("contactForm").reset();
+        });
+    </script>
+</body>
+
+</html>

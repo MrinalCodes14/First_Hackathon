@@ -1,380 +1,112 @@
-// ==========================================
-// CIVICFIX - HOMEPAGE JAVASCRIPT
-// ==========================================
+const reports = () => JSON.parse(localStorage.getItem("civicReports") || "[]");
 
-
-// ==========================================
-// 1. REPORT ISSUE BUTTON
-// ==========================================
-
-const reportButtons = document.querySelectorAll(
-    ".primary-btn, .hero-buttons .primary-btn"
-);
-
-reportButtons.forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        alert("Report Issue page will open here.");
-
-        // Later:
-        // window.location.href = "report.html";
-
-    });
-
-});
-
-
-// ==========================================
-// 2. VIEW ISSUES MAP BUTTON
-// ==========================================
-
-const mapButtons = document.querySelectorAll(
-    ".secondary-btn, .map-header button"
-);
-
-mapButtons.forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        alert("Issues Map will open here.");
-
-        // Later:
-        // window.location.href = "map.html";
-
-    });
-
-});
-
-
-// ==========================================
-// 3. LOGIN BUTTON
-// ==========================================
-
-const loginButton = document.querySelector(".login-btn");
-
-if (loginButton) {
-
-    loginButton.addEventListener("click", function () {
-
-        alert("Login page will open here.");
-
-        // Later:
-        // window.location.href = "login.html";
-
-    });
-
+function showNotifications() {
+    const count = reports().length;
+    alert(count ? `You have ${count} report${count === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
 }
-
-
-// ==========================================
-// 4. SIGN UP BUTTON
-// ==========================================
-
-const signupButton = document.querySelector(".signup-btn");
-
-if (signupButton) {
-
-    signupButton.addEventListener("click", function () {
-
-        alert("Registration page will open here.");
-
-        // Later:
-        // window.location.href = "register.html";
-
-    });
-
-}
-
-
-// ==========================================
-// 5. NOTIFICATION BUTTON
-// ==========================================
-
-const notificationButton =
-    document.querySelector(".notification");
-
-if (notificationButton) {
-
-    notificationButton.addEventListener("click", function () {
-
-        alert("You have no new notifications.");
-
-    });
-
-}
-
-
-// ==========================================
-// 6. CATEGORY CARDS
-// ==========================================
-
-const categoryCards =
-    document.querySelectorAll(".category-card");
-
-categoryCards.forEach(card => {
-
-    card.addEventListener("click", function () {
-
-        const categoryName =
-            card.querySelector("h3").textContent;
-
-        console.log("Selected category:", categoryName);
-
-        alert(
-            "You selected: " + categoryName
-        );
-
-        // Later:
-        // window.location.href =
-        // "report.html?category=" +
-        // encodeURIComponent(categoryName);
-
-    });
-
-});
-
-
-// ==========================================
-// 7. MAP MARKERS
-// ==========================================
-
-const markers =
-    document.querySelectorAll(".marker");
-
-markers.forEach((marker, index) => {
-
-    marker.addEventListener("click", function () {
-
-        const issues = [
-            "Pothole reported near Main Street",
-            "Garbage reported near Block A",
-            "Streetlight problem near Library",
-            "Water leakage reported",
-            "Road damage reported"
-        ];
-
-        alert(
-            issues[index] ||
-            "Civic issue reported here."
-        );
-
-    });
-
-});
-
-
-// ==========================================
-// 8. MAP ZOOM BUTTONS
-// ==========================================
-
-const mapControls =
-    document.querySelectorAll(".map-controls button");
-
-let mapScale = 1;
-
-
-// Zoom In
-
-if (mapControls[0]) {
-
-    mapControls[0].addEventListener("click", function () {
-
-        mapScale += 0.1;
-
-        document.querySelector(".map").style.transform =
-            `scale(${mapScale})`;
-
-    });
-
-}
-
-
-// Zoom Out
-
-if (mapControls[1]) {
-
-    mapControls[1].addEventListener("click", function () {
-
-        if (mapScale > 0.7) {
-
-            mapScale -= 0.1;
-
-            document.querySelector(".map").style.transform =
-                `scale(${mapScale})`;
-
-        }
-
-    });
-
-}
-
-
-// Location button
-
-if (mapControls[2]) {
-
-    mapControls[2].addEventListener("click", function () {
-
-        getUserLocation();
-
-    });
-
-}
-
-
-// ==========================================
-// 9. GET USER LOCATION
-// ==========================================
 
 function getUserLocation() {
-
     if (!navigator.geolocation) {
-
-        alert(
-            "Geolocation is not supported by your browser."
-        );
-
+        alert("Geolocation is not supported by your browser.");
         return;
     }
-
-
     navigator.geolocation.getCurrentPosition(
-
-        function (position) {
-
-            const latitude =
-                position.coords.latitude;
-
-            const longitude =
-                position.coords.longitude;
-
-
-            console.log("Latitude:", latitude);
-            console.log("Longitude:", longitude);
-
-
-            alert(
-                "Your location found!\n\n" +
-                "Latitude: " + latitude +
-                "\nLongitude: " + longitude
-            );
-
-
-            // Later:
-            // Send this location to Flask
-            // and save it in MongoDB.
-
-        },
-
-
-        function (error) {
-
-            console.log(error);
-
-            alert(
-                "Unable to get your location."
-            );
-
-        }
-
+        p => alert(`Your location was found!\n\nLatitude: ${p.coords.latitude.toFixed(6)}\nLongitude: ${p.coords.longitude.toFixed(6)}`),
+        () => alert("Unable to get your location.")
     );
-
+}
+function updateDashboard() {
+    const list = reports();
+    const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+    set("totalReports", list.length);
+    set("reportedCount", list.filter(r => r.status === "Reported").length);
+    set("reviewCount", list.filter(r => r.status === "Under Review").length);
+    set("progressCount", list.filter(r => r.status === "In Progress").length);
+    set("resolvedCount", list.filter(r => r.status === "Resolved").length);
+    ["Pothole", "Garbage", "Streetlight", "Water Leakage", "Road Damage", "Others"].forEach(c => {
+        const el = document.getElementById("cat-" + c);
+        if (el) el.textContent = list.filter(r => r.category === c).length;
+    });
+}
+function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 }
 
+function renderRecentIssues() {
+    const box = document.getElementById("recentIssues");
+    if (!box) return;
+    const list = reports();
+    if (!list.length) {
+        box.innerHTML = `<div style="padding:20px;text-align:center;color:#68747e">No reports yet. <a href="report.html" style="color:#299e65;font-weight:bold">Report an issue</a></div>`;
+        return;
+    }
+    box.innerHTML = list.slice(0, 4).map(r => `
+<div class="issue" style="cursor:pointer" onclick="showIssue('${escapeHtml(r.category)}','${escapeHtml(r.description)}','${escapeHtml(r.status)}')">
+<div class="issue-image">${iconFor(r.category)}</div>
+<div class="issue-info">
+<h3>${escapeHtml(r.description || r.category + " issue")}</h3>
+<p>📍 ${escapeHtml(r.address)}</p>
+<small>${escapeHtml(r.createdAt)}</small>
+</div>
+<span class="status">${escapeHtml(r.status)}</span>
+</div>
+`).join("");
+}
 
-// ==========================================
-// 10. RECENT ISSUE - VIEW ALL
-// ==========================================
+function showIssue(category, description, status) {
+    alert(`Category: ${category}\nIssue: ${description}\nStatus: ${status}`);
+}
 
-const viewAllButtons =
-    document.querySelectorAll(".section-heading button");
-
-viewAllButtons.forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        alert(
-            "All reported issues will appear here."
-        );
-
-        // Later:
-        // window.location.href = "issues.html";
-
+function iconFor(category) {
+    const icons = {
+        "Pothole": "🕳️",
+        "Garbage": "🗑️",
+        "Streetlight": "💡",
+        "Water Leakage": "💧",
+        "Road Damage": "🛣️",
+        "Others": "•••"
+    };
+    return icons[category] || "📍";
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const current = location.pathname.split("/").pop() || "index.html";
+    document.querySelectorAll("nav a").forEach(link => {
+        if (link.getAttribute("href") === current) link.classList.add("active");
     });
 
-});
+    const notification = document.getElementById("notificationButton");
+    if (notification) notification.addEventListener("click", showNotifications);
 
-
-// ==========================================
-// 11. RECENT ISSUE CLICK
-// ==========================================
-
-const issues =
-    document.querySelectorAll(".issue");
-
-issues.forEach(issue => {
-
-    issue.addEventListener("click", function () {
-
-        const title =
-            issue.querySelector("h3").textContent;
-
-        const status =
-            issue.querySelector(".status").textContent;
-
-        alert(
-            "Issue: " + title +
-            "\nStatus: " + status
-        );
-
-    });
-
-});
-
-
-// ==========================================
-// 12. NAVIGATION
-// ==========================================
-
-const navigationLinks =
-    document.querySelectorAll("nav a");
-
-navigationLinks.forEach(link => {
-
-    link.addEventListener("click", function (event) {
-
-        event.preventDefault();
-
-
-        // Remove active class
-
-        navigationLinks.forEach(item => {
-
-            item.classList.remove("active");
-
+    document.querySelectorAll(".category-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const category = card.dataset.category;
+            location.href = "issuesmap.html?category=" + encodeURIComponent(category);
         });
-
-
-        // Add active class to clicked link
-
-        link.classList.add("active");
-
-
-        console.log(
-            "Navigation:",
-            link.textContent
-        );
-
     });
 
+    const zoomIn = document.querySelector('[data-zoom="in"]');
+    const zoomOut = document.querySelector('[data-zoom="out"]');
+    const map = document.getElementById("homeMap");
+    let scale = 1;
+
+    if (zoomIn && map) {
+        zoomIn.onclick = () => {
+            scale = Math.min(scale + 0.1, 1.5);
+            map.style.transform = `scale(${scale})`;
+        };
+    }
+    if (zoomOut && map) {
+        zoomOut.onclick = () => {
+            scale = Math.max(scale - 0.1, 0.7);
+            map.style.transform = `scale(${scale})`;
+        };
+    }
+    const locate = document.getElementById("locateHome");
+    if (locate) locate.onclick = getUserLocation;
+
+    updateDashboard();
+    renderRecentIssues();
 });
-
-
-// ==========================================
-// 13. PAGE LOADED
-// ==========================================
-
-console.log(
-    "CivicFix website loaded successfully! 🚀"
-);

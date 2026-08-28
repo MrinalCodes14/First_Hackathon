@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Issues Map - CivicDrishti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .map-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px
+        }
+
+        .map-page h1 {
+            text-align: center
+        }
+
+        .map-page>p {
+            text-align: center;
+            color: #68747e
+        }
+
+        .map-wrapper {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06)
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px
+        }
+
+        .filters button {
+            padding: 9px 15px;
+            border: 1px solid #d7dee2;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer
+        }
+
+        .filters button.active {
+            background: #299e65;
+            color: white;
+            border-color: #299e65
+        }
+
+        .big-map {
+            height: 500px;
+            background: #e7eee9;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .big-map .road {
+            position: absolute;
+            background: #c7cec9
+        }
+
+        .big-map .road1 {
+            width: 120%;
+            height: 35px;
+            top: 45%;
+            left: -10%;
+            transform: rotate(12deg)
+        }
+
+        .big-map .road2 {
+            height: 120%;
+            width: 35px;
+            left: 55%;
+            top: -10%;
+            transform: rotate(18deg)
+        }
+
+        .big-map .road3 {
+            width: 100%;
+            height: 25px;
+            top: 70%;
+            left: 0;
+            transform: rotate(-8deg)
+        }
+
+        .big-map .river {
+            position: absolute;
+            width: 130%;
+            height: 80px;
+            background: #9dd5e5;
+            top: 15%;
+            left: -15%;
+            transform: rotate(-8deg)
+        }
+
+        .issue-marker {
+            position: absolute;
+            font-size: 28px;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 5
+        }
+
+        .map-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5faf7;
+            border-radius: 10px;
+            display: none
+        }
+
+        .map-info h3 {
+            margin: 0 0 8px
+        }
+
+        .map-info p {
+            margin: 5px 0;
+            color: #68747e
+        }
+
+        .no-issues {
+            text-align: center;
+            padding: 30px;
+            color: #68747e
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z"/></svg></div>
+            <div>
+                <h2>CivicDrishti</h2>
+                <p>You Report. We Resolve.</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="myreports.html">My Reports</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="contacts.html">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <button class="notification" onclick="showNotifications()">🔔</button>
+            <button class="login-btn" onclick="location.href='login.html'">Login</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">Sign Up</button>
+        </div>
+    </header>
+    <main class="map-page">
+        <span class="small-title">🗺️ CIVIC ISSUES</span>
+        <h1>Issues <span>Map</span></h1>
+        <p>Explore reported civic issues by category.</p>
+        <div class="map-wrapper">
+            <div class="filters">
+                <button class="filter active" data-category="All">All</button>
+                <button class="filter" data-category="Pothole">🕳️ Pothole</button>
+                <button class="filter" data-category="Garbage">🗑️ Garbage</button>
+                <button class="filter" data-category="Streetlight">💡 Streetlight</button>
+                <button class="filter" data-category="Water Leakage">💧 Water Leakage</button>
+                <button class="filter" data-category="Road Damage">🛣️ Road Damage</button>
+                <button class="filter" data-category="Others">••• Others</button>
+            </div>
+            <div class="big-map" id="issueMap">
+                <div class="road road1"></div>
+                <div class="road road2"></div>
+                <div class="road road3"></div>
+                <div class="river"></div>
+            </div>
+            <div class="map-info" id="mapInfo"></div>
+        </div>
+    </main>
+    <script>
+        const icons = { "Pothole": "🕳️", "Garbage": "🗑️", "Streetlight": "💡", "Water Leakage": "💧", "Road Damage": "🛣️", "Others": "•••" };
+        const positions = [[20, 55], [35, 35], [52, 65], [68, 45], [82, 62], [45, 22], [75, 25], [25, 75]];
+
+        function getReports() {
+            return JSON.parse(localStorage.getItem("civicReports") || "[]");
+        }
+
+        function showNotifications() {
+            const reports = getReports();
+            alert(reports.length ? `You have ${reports.length} report${reports.length === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
+        }
+
+        function escapeHtml(value) {
+            return String(value || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+        }
+
+        function renderMap(category = "All") {
+            const map = document.getElementById("issueMap");
+            map.querySelectorAll(".issue-marker,.no-issues").forEach(e => e.remove());
+            const reports = getReports();
+            const visible = reports.filter(r => category === "All" || r.category === category);
+            visible.forEach((r, i) => {
+                const marker = document.createElement("span");
+                const pos = positions[i % positions.length];
+                marker.className = "issue-marker";
+                marker.textContent = "📍";
+                marker.style.left = pos[0] + "%";
+                marker.style.top = pos[1] + "%";
+                marker.title = r.category;
+                marker.onclick = () => {
+                    const info = document.getElementById("mapInfo");
+                    info.style.display = "block";
+                    info.innerHTML = `<h3>${icons[r.category] || "📍"} ${escapeHtml(r.category)}</h3><p>${escapeHtml(r.description)}</p><p>📍 ${escapeHtml(r.address)}</p><p>🟢 Status: ${escapeHtml(r.status)}</p>`;
+                };
+                map.appendChild(marker);
+            });
+
+            if (!visible.length) {
+                const empty = document.createElement("div");
+                empty.className = "no-issues";
+                empty.textContent = "No reported issues in this category.";
+                map.appendChild(empty);
+            }
+        }
+        document.querySelectorAll(".filter").forEach(button => {
+            button.addEventListener("click", () => {
+                document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+                button.classList.add("active");
+                renderMap(button.dataset.category);
+            });
+        });
+        const params = new URLSearchParams(location.search);
+        const selected = params.get("category");
+        if (selected) {
+            const button = document.querySelector(`[data-category="${CSS.escape(selected)}"]`);
+            if (button) button.click();
+            else renderMap();
+        } else {
+            renderMap();
+        }
+    </script>
+</body>
+</html>

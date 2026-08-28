@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>How It Works - CivicDrishti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .how-page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px
+        }
+
+        .how-page h1 {
+            text-align: center
+        }
+
+        .how-page>p {
+            text-align: center;
+            color: #68747e;
+            margin-bottom: 35px
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px
+        }
+
+        .step {
+            background: white;
+            padding: 28px 22px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, .06)
+        }
+
+        .step-number {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #e8f7ee;
+            color: #299e65;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0 auto 15px
+        }
+
+        .step h2 {
+            margin: 10px 0
+        }
+
+        .step p {
+            color: #68747e;
+            line-height: 1.6
+        }
+
+        .start-box {
+            margin-top: 30px;
+            background: #f5faf7;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center
+        }
+
+        .start-box button {
+            padding: 13px 22px;
+            border: 0;
+            border-radius: 8px;
+            background: #299e65;
+            color: white;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+        @media(max-width:700px) {
+            .steps {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z"/></svg></div>
+            <div>
+                <h2>CivicDrishti</h2>
+                <p>You Report. We Resolve.</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="myreports.html">My Reports</a>
+            <a href="how-it-works.html" class="active">How It Works</a>
+            <a href="contacts.html">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <button class="notification" onclick="showNotifications()">🔔</button>
+            <button class="login-btn" onclick="location.href='login.html'">Login</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">Sign Up</button>
+        </div>
+    </header>
+    <main class="how-page">
+        <span class="small-title">💡 HOW IT WORKS</span>
+        <h1>How <span>CivicDrishti</span> Works</h1>
+        <p>Reporting a civic issue takes just a few simple steps.</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h2>📸 Spot an Issue</h2>
+                <p>Find a civic problem such as a pothole, garbage, broken streetlight, water leakage or road damage.
+                </p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h2>📝 Report It</h2>
+                <p>Choose the issue category, describe the problem, add a photo and provide the location.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h2>📍 Track It</h2>
+                <p>View your submitted reports and track their current status from the My Reports page.</p>
+            </div>
+        </div>
+        <div class="start-box">
+            <h2>Ready to report an issue?</h2>
+            <p>Help make your city cleaner, safer and better.</p>
+            <button onclick="location.href='report.html'">Report an Issue</button>
+        </div>
+    </main>
+    <script>
+        function showNotifications() {
+            const reports = JSON.parse(localStorage.getItem("civicReports") || "[]");
+            alert(reports.length ? `You have ${reports.length} report${reports.length === 1 ? "" : "s"} saved on this device.` : "You have no reports yet.");
+        }
+    </script>
+</body>
+
+</html>
