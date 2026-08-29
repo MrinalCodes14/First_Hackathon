@@ -977,3 +977,7 @@ footer .copyright {
     justify-content: center;
     text-decoration: none;
 }
+#homemap{
+    height: 500px;
+    width: 100%;
+}

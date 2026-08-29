@@ -110,3 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateDashboard();
     renderRecentIssues();
 });
+const map=L.map("homeMap").setView([28.6139,77.2090],13);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}).addTo(map);
+L.marker([28.6139,77.2090]).addTo(map).bindPopup("Civic issue location");
